@@ -16,6 +16,9 @@
 ### 認証
 - Session Base
 
+### データベース
+- PostgreSQL
+
 # 担当
 issue駆動開発
 - フロントエンド
