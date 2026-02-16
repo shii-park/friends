@@ -1,0 +1,6 @@
+[submodule "friends_frontend"]
+	path = friends_frontend
+	url = https://github.com/shii-park/friends_frontend.git
+[submodule "friends_backend"]
+	path = friends_backend
+	url = https://github.com/shii-park/friends_backend.git
