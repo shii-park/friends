@@ -1,0 +1,121 @@
+services:
+  # PostgreSQL
+  # 使う時はコメント外す
+  # db:
+  #   image: postgres:16-alpine
+  #   container_name: friends-db
+  #
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #     POSTGRES_DB: friends
+  #
+  #   ports:
+  #     - "5432:5432"
+  #
+  #   volumes:
+  #     - pgdata:/var/lib/postgresql/data
+  #
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U postgres -d friends"]
+  #     interval: 5s
+  #     timeout: 3s
+  #     retries: 10
+  #
+  #   profiles: ["dev","prod"]
+
+  # Backend
+  backend-dev:
+
+    build:
+      context: ./friends_backend
+      dockerfile: Dockerfile.dev
+
+    container_name: friends-backend-dev
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - ./friends_backend:/app
+      - go-mod-cache:/go/pkg/mod
+      - go-build-cache:/root/.cache/go-build
+
+    # PostgreSQL接続用
+    # environment:
+    #   - DATABASE_URL=
+    #
+    # depends_on:
+    #   db:
+    #     condition: service_healthy
+
+    profiles: ["dev"]
+
+  backend:
+
+    build:
+      context: ./friends_backend
+      dockerfile: Dockerfile
+
+    container_name: friends-backend
+
+    ports:
+      - "8080:8080"
+
+    # PostgreSQL接続用
+    # environment:
+    #   - DATABASE_URL=postgres://postgres:postgres@db:5432/friends?sslmode=disable
+    #
+    # depends_on:
+    #   db:
+    #     condition: service_healthy
+
+    profiles: ["prod"]
+
+  # Frontend
+  frontend-dev:
+
+    build:
+      context: ./friends_frontend
+      dockerfile: Dockerfile.dev
+
+    container_name: friends-frontend-dev
+
+    ports:
+      - "5173:5173"
+
+    volumes:
+      - ./friends_frontend:/app
+      - node_modules:/app/node_modules
+
+    environment:
+      - VITE_API_BASE=http://localhost:8080
+
+    depends_on:
+      - backend-dev
+
+    profiles: ["dev"]
+
+  frontend:
+    build:
+      context: ./friends_frontend
+      dockerfile: Dockerfile
+
+    container_name: friends-frontend
+
+    ports:
+      - "5173:80"
+
+    depends_on:
+      - backend
+
+    profiles: ["prod"]
+
+# volumes
+volumes:
+
+  go-mod-cache:
+  go-build-cache:
+
+  node_modules:
+  # pgdata:
