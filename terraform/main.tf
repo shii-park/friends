@@ -40,3 +40,15 @@ resource "azurerm_log_analytics_workspace" "logs" {
   sku                 = "PerGB2018"
   retention_in_days   = 30
 }
+# ACA が ACR からイメージを取得できるように AcrPull 権限を付与
+resource "azurerm_role_assignment" "acrpull_backend" {
+  scope                = azurerm_container_registry.acr.id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_container_app.backend.identity[0].principal_id
+}
+
+resource "azurerm_role_assignment" "acrpull_frontend" {
+  scope                = azurerm_container_registry.acr.id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_container_app.frontend.identity[0].principal_id
+}

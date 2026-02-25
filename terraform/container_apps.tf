@@ -9,6 +9,11 @@ resource "azurerm_container_app" "backend" {
     type = "SystemAssigned"
   }
 
+  registry {
+    server   = azurerm_container_registry.acr.login_server
+    identity = "system"
+  }
+
   template {
     container {
       name   = "backend"
@@ -74,6 +79,11 @@ resource "azurerm_container_app" "frontend" {
 
   identity {
     type = "SystemAssigned"
+  }
+
+  registry {
+    server   = azurerm_container_registry.acr.login_server
+    identity = "system"
   }
 
   template {
